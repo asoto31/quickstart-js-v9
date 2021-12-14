@@ -15,6 +15,8 @@
  */
 'use strict';
 
+import FriendlyEats from './FriendlyEats.js';
+
 /**
  * Adds a set of mock Restaurants to the Firestore.
  */

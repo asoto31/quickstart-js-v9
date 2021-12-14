@@ -15,6 +15,29 @@
  */
 'use strict';
 
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+import { getDatabase, ref, query, limitToLast, onChildAdded, connectDatabaseEmulator } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, connectAuthEmulator } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-functions.js';
+
+const firebaseApp = initializeApp({
+  apiKey: "AIzaSyBKQSNOdz83RUz9HYbVV3gjdfcvmrpmliI",
+  authDomain: "replicator-37607.firebaseapp.com",
+  databaseURL: "https://replicator-37607.firebaseio.com",
+  projectId: "replicator-37607",
+  storageBucket: "replicator-37607.appspot.com",
+  messagingSenderId: "1082371143398",
+  appId: "1:1082371143398:web:e3b0f970797e9303bd6d27",
+  measurementId: "G-RDVGL3ZN2L"
+});
+
+const auth = getAuth();
+/* connectAuthEmulator(auth, "http://localhost:9099"); */
+const db = getDatabase();
+/* connectDatabaseEmulator(db, "localhost", 9000); */
+const functions = getFunctions();
+/* connectFunctionsEmulator(functions, "localhost", 5001); */
+
 /**
  * Initializes the Functions Web quickstart app.
  */
@@ -35,9 +58,10 @@ function FunctionsQuickstart() {
   this.addMessageButton.addEventListener('click', this.addMessage.bind(this));
   this.addNumbersButton.addEventListener('click', this.addNumbers.bind(this));
   // Listen for auth state changes.
-  firebase.auth().onAuthStateChanged(this.onAuthStateChanged.bind(this));
+  onAuthStateChanged(auth, this.onAuthStateChanged.bind(this));
   // Listen for new Messages to be displayed.
-  firebase.database().ref('/messages').limitToLast(10).on('child_added', this.onNewMessage.bind(this));
+  onChildAdded(query(ref(db, 'messages'), limitToLast(10)), this.onNewMessage.bind(this));
+  /* firebase.database().ref('/messages').limitToLast(10).on('child_added', this.onNewMessage.bind(this)); */
 }
 
 // Adds two numbers by calling the `addNumbers` server-side function.
@@ -46,7 +70,8 @@ FunctionsQuickstart.prototype.addNumbers = function() {
   var secondNumber = parseFloat(this.secondNumber.value);
   var addNumbersButton = this.addNumbersButton;
   addNumbersButton.disabled = true;
-  var sendNotification = firebase.functions().httpsCallable('addNumbers');
+  var sendNotification = httpsCallable(functions, 'addNumbers');
+  /* var sendNotification = firebase.functions().httpsCallable('addNumbers'); */
   sendNotification({firstNumber: firstNumber, secondNumber: secondNumber}).then(function(result) {
     console.log('Cloud Function called successfully.', result);
     // Read results of the Cloud Function.
@@ -76,7 +101,8 @@ FunctionsQuickstart.prototype.addMessage = function() {
   var messageText = messageTextInput.value;
   var addMessageButton = this.addMessageButton;
   addMessageButton.disabled = true;
-  var addMessage = firebase.functions().httpsCallable('addMessage');
+  var addMessage = httpsCallable(functions, 'addMessage');
+  /* var addMessage = firebase.functions().httpsCallable('addMessage'); */
   addMessage({text: messageText}).then(function(result) {
     // Read result of the Cloud Function.
     var sanitizedMessage = result.data.text;
@@ -99,13 +125,13 @@ FunctionsQuickstart.prototype.addMessage = function() {
 
 // Start the Firebase signs-in flow via Google account.
 FunctionsQuickstart.prototype.signIn = function() {
-  var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider);
+  var provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider);
 };
 
 // The user signs-out his Firebase account.
 FunctionsQuickstart.prototype.signOut = function() {
-  firebase.auth().signOut();
+  signOut(auth);
 };
 
 // This is called when the Firebase auth state has changed. i.e. the User has signed-in or signed-out.

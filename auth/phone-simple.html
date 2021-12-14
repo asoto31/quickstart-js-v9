@@ -79,18 +79,22 @@ limitations under the License.
 <!-- Import and configure the Firebase SDK -->
 <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
 <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-<script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+<!-- <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
 <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
-<script src="/__/firebase/init.js"></script>
+<script src="/__/firebase/init.js"></script> -->
 
-<script type="text/javascript">
+<script type="module" src="./init.js"></script>
+
+  <script type="module">
+    import { auth } from "./init.js";
+    import { onAuthStateChanged, signOut, RecaptchaVerifier } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
   /**
    * Set up UI event listeners and registering Firebase auth listeners.
    */
   window.onload = function() {
     // Listening for auth state changes.
-    firebase.auth().onAuthStateChanged(function(user) {
+    onAuthStateChanged(auth, function(user) {
       if (user) {
         // User is signed in.
         var uid = user.uid;
@@ -123,14 +127,14 @@ limitations under the License.
    * Signs out the user when the sign-out button is clicked.
    */
   function onSignOutClick() {
-    firebase.auth().signOut();
+    auth.signOut();
   }
 
   /**
    * Updates the state of the Sign-in form.
    */
   function updateSignInButtonUI() {
-    if (firebase.auth().currentUser) {
+    if (auth.currentUser) {
       document.getElementById('sign-in-button').style.display = 'none';
     } else {
       document.getElementById('sign-in-button').style.display = 'block';
@@ -141,7 +145,7 @@ limitations under the License.
    * Updates the state of the Sign out button.
    */
   function updateSignOutButtonUI() {
-    if (firebase.auth().currentUser) {
+    if (auth.currentUser) {
       document.getElementById('sign-out-button').style.display = 'block';
     } else {
       document.getElementById('sign-out-button').style.display = 'none';
@@ -152,7 +156,7 @@ limitations under the License.
    * Updates the Signed in user status panel.
    */
   function updateSignedInUserStatusUI() {
-    var user = firebase.auth().currentUser;
+    var user = auth.currentUser;
     if (user) {
       document.getElementById('sign-in-status').textContent = 'Signed in';
       document.getElementById('account-details').textContent = JSON.stringify(user, null, '  ');

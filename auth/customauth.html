@@ -30,18 +30,22 @@ limitations under the License.
   <!-- Import and configure the Firebase SDK -->
   <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
   <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-  <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+  <!-- <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
   <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
-  <script src="/__/firebase/init.js"></script>
+  <script src="/__/firebase/init.js"></script> -->
 
-  <script type="text/javascript">
+  <script type="module" src="./init.js"></script>
+
+  <script type="module">
+    import { auth } from "./init.js";
+    import { onAuthStateChanged, signOut, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
     /**
      * Handle the sign in button press.
      */
     function toggleSignIn() {
-      if (firebase.auth().currentUser) {
-        firebase.auth().signOut();
+      if (auth.currentUser) {
+        auth.signOut();
       } else {
         var token = document.getElementById('tokentext').value;
         if (token.length < 10) {
@@ -49,7 +53,7 @@ limitations under the License.
           return;
         }
         // Sign in with custom token generated following previous instructions.
-        firebase.auth().signInWithCustomToken(token).catch(function(error) {
+        signInWithCustomToken(auth, token).catch(function(error) {
           // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
@@ -71,7 +75,7 @@ limitations under the License.
      */
     function initApp() {
       // Listening for auth state changes.
-      firebase.auth().onAuthStateChanged(function(user) {
+      onAuthStateChanged(auth, function(user) {
         if (user) {
           // User is signed in.
           var displayName = user.displayName;
@@ -107,7 +111,7 @@ limitations under the License.
       // If a token has been passed in the hash fragment we display it in the UI and start the sign in process.
       document.getElementById('tokentext').value = getHashValue('token') || '';
       if (document.getElementById('tokentext').value) {
-        firebase.auth().signInWithCustomToken(getHashValue('token'));
+        signInWithCustomToken(auth, getHashValue('token'));
       }
     };
   </script>

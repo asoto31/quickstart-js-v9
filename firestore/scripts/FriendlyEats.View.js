@@ -15,22 +15,24 @@
  */
 'use strict';
 
-FriendlyEats.ID_CONSTANT = 'fir-';
+import FriendlyEats from './FriendlyEats.js';
 
-FriendlyEats.prototype.initTemplates = function() {
+/* FriendlyEats.ID_CONSTANT = 'fir-'; */
+
+/* FriendlyEats.prototype.initTemplates = function() {
   this.templates = {};
 
   var that = this;
   document.querySelectorAll('.template').forEach(function(el) {
     that.templates[el.getAttribute('id')] = el;
   });
-};
+}; */
 
-FriendlyEats.prototype.viewHome = function() {
+/* FriendlyEats.prototype.viewHome = function() {
   this.getAllRestaurants();
-};
+}; */
 
-FriendlyEats.prototype.viewList = function(filters, filter_description) {
+/* FriendlyEats.prototype.viewList = function(filters, filter_description) {
   if (!filter_description) {
     filter_description = 'any type of food with any price in any city.';
   }
@@ -120,9 +122,9 @@ FriendlyEats.prototype.viewList = function(filters, filter_description) {
   toolbar.fixedAdjustElement = document.querySelector('.mdc-toolbar-fixed-adjust');
 
   mdc.autoInit();
-};
+}; */
 
-FriendlyEats.prototype.viewSetup = function() {
+/* FriendlyEats.prototype.viewSetup = function() {
   var headerEl = this.renderTemplate('header-base', {
     hasSectionHeader: false
   });
@@ -273,9 +275,9 @@ FriendlyEats.prototype.initFilterDialog = function() {
       displaySection('page-all');
     });
   });
-};
+}; */
 
-FriendlyEats.prototype.updateQuery = function(filters) {
+/* FriendlyEats.prototype.updateQuery = function(filters) {
   var query_description = '';
 
   if (filters.category !== '') {
@@ -303,9 +305,9 @@ FriendlyEats.prototype.updateQuery = function(filters) {
   }
 
   this.viewList(filters, query_description);
-};
+}; */
 
-FriendlyEats.prototype.viewRestaurant = function(id) {
+/* FriendlyEats.prototype.viewRestaurant = function(id) {
   var sectionHeaderEl;
   var that = this;
 
@@ -363,9 +365,9 @@ FriendlyEats.prototype.viewRestaurant = function(id) {
     .catch(function(err) {
       console.warn('Error rendering page', err);
     });
-};
+}; */
 
-FriendlyEats.prototype.renderTemplate = function(id, data) {
+/* FriendlyEats.prototype.renderTemplate = function(id, data) {
   var template = this.templates[id];
   var el = template.cloneNode(true);
   el.removeAttribute('hidden');
@@ -378,9 +380,9 @@ FriendlyEats.prototype.renderTemplate = function(id, data) {
   }
 
   return el;
-};
+}; */
 
-FriendlyEats.prototype.render = function(el, data) {
+/* FriendlyEats.prototype.render = function(el, data) {
   if (!data) {
     return;
   }
@@ -473,9 +475,9 @@ FriendlyEats.prototype.render = function(el, data) {
     var modifier = modifiers[selector];
     that.useModifier(el, selector, modifier);
   });
-};
+}; */
 
-FriendlyEats.prototype.useModifier = function(el, selector, modifier) {
+/* FriendlyEats.prototype.useModifier = function(el, selector, modifier) {
   el.querySelectorAll('[' + selector + ']').forEach(modifier);
 };
 
@@ -506,13 +508,13 @@ FriendlyEats.prototype.renderPrice = function(price) {
     el.append('$');
   }
   return el;
-};
+}; */
 
-FriendlyEats.prototype.replaceElement = function(parent, content) {
+/* FriendlyEats.prototype.replaceElement = function(parent, content) {
   parent.innerHTML = '';
   parent.append(content);
-};
+}; */
 
-FriendlyEats.prototype.rerender = function() {
+/* FriendlyEats.prototype.rerender = function() {
   this.router.navigate(document.location.pathname + '?' + new Date().getTime());
-};
+}; */

@@ -62,14 +62,30 @@ limitations under the License.
   <!-- Import and configure the Firebase SDK -->
   <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
   <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-  <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+  <!-- <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
   <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
   <script src="/__/firebase/9.6.1/firebase-storage-compat.js"></script>
-  <script src="/__/firebase/init.js"></script>
+  <script src="/__/firebase/init.js"></script> -->
 
-  <script>
-    var auth = firebase.auth();
-    var storageRef = firebase.storage().ref();
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+    import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+    
+    const firebaseApp = initializeApp({
+      apiKey: "AIzaSyBKQSNOdz83RUz9HYbVV3gjdfcvmrpmliI",
+      authDomain: "replicator-37607.firebaseapp.com",
+      databaseURL: "https://replicator-37607.firebaseio.com",
+      projectId: "replicator-37607",
+      storageBucket: "replicator-37607.appspot.com",
+      messagingSenderId: "1082371143398",
+      appId: "1:1082371143398:web:e3b0f970797e9303bd6d27",
+      measurementId: "G-RDVGL3ZN2L"
+    });
+    const auth = getAuth();
+    const storage = getStorage();
+    // Create a storage reference from our storage service
+    /* const storageRef = ref(storage); */
 
     function handleFileSelect(evt) {
       evt.stopPropagation();
@@ -81,11 +97,13 @@ limitations under the License.
       };
 
       // Push to child path.
-      storageRef.child('images/' + file.name).put(file, metadata).then(function(snapshot) {
+      const storageRef = ref(storage, 'images/' + file.name);
+      const uploadTask = uploadBytes(storageRef, file, metadata);
+      uploadTask.then(function(snapshot) {
         console.log('Uploaded', snapshot.totalBytes, 'bytes.');
         console.log('File metadata:', snapshot.metadata);
         // Let's get a download URL for the file.
-        snapshot.ref.getDownloadURL().then(function(url) {
+        getDownloadURL(snapshot.ref).then(function(url) {
           console.log('File available at', url);
           document.getElementById('linkbox').innerHTML = '<a href="' +  url + '">Click For File</a>';
         });
@@ -98,14 +116,14 @@ limitations under the License.
       document.getElementById('file').addEventListener('change', handleFileSelect, false);
       document.getElementById('file').disabled = true;
 
-      auth.onAuthStateChanged(function(user) {
+      onAuthStateChanged(auth, (user) => {
         if (user) {
           console.log('Anonymous user signed-in.', user);
           document.getElementById('file').disabled = false;
         } else {
           console.log('There was no anonymous session. Creating a new anonymous user.');
           // Sign the user in anonymously since accessing Storage requires the user to be authorized.
-          auth.signInAnonymously().catch(function(error) {
+          signInAnonymously(auth).catch(function(error) {
             if (error.code === 'auth/operation-not-allowed') {
               window.alert('Anonymous Sign-in failed. Please make sure that you have enabled anonymous ' +
                   'sign-in on your Firebase project.');

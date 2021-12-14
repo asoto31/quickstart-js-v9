@@ -101,18 +101,22 @@ limitations under the License.
 <!-- Import and configure the Firebase SDK -->
 <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
 <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-<script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+<!-- <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
 <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
-<script src="/__/firebase/init.js"></script>
+<script src="/__/firebase/init.js"></script> -->
 
-<script type="text/javascript">
+<script type="module" src="./init.js"></script>
+
+  <script type="module">
+    import { auth } from "./init.js";
+    import { onAuthStateChanged, signOut, RecaptchaVerifier, signInWithPhoneNumber } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
   /**
    * Set up UI event listeners and registering Firebase auth listeners.
    */
   window.onload = function() {
     // Listening for auth state changes.
-    firebase.auth().onAuthStateChanged(function(user) {
+    onAuthStateChanged(auth, function(user) {
       if (user) {
         // User is signed in.
         var uid = user.uid;
@@ -140,13 +144,13 @@ limitations under the License.
     document.getElementById('verification-code-form').addEventListener('submit', onVerifyCodeSubmit);
     document.getElementById('cancel-verify-code-button').addEventListener('click', cancelVerification);
 
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sign-in-button', {
+    window.recaptchaVerifier = new RecaptchaVerifier('sign-in-button', {
       'size': 'invisible',
       'callback': function(response) {
         // reCAPTCHA solved, allow signInWithPhoneNumber.
         onSignInSubmit();
       }
-    });
+    }, auth);
 
     recaptchaVerifier.render().then(function(widgetId) {
       window.recaptchaWidgetId = widgetId;
@@ -163,7 +167,7 @@ limitations under the License.
       updateSignInButtonUI();
       var phoneNumber = getPhoneNumberFromUserInput();
       var appVerifier = window.recaptchaVerifier;
-      firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+      signInWithPhoneNumber(auth, phoneNumber, appVerifier)
           .then(function (confirmationResult) {
             // SMS sent. Prompt user to type the code from the message, then sign the
             // user in with confirmationResult.confirm(code).
@@ -226,7 +230,7 @@ limitations under the License.
    * Signs out the user when the sign-out button is clicked.
    */
   function onSignOutClick() {
-    firebase.auth().signOut();
+    auth.signOut();
   }
 
   /**
@@ -284,7 +288,7 @@ limitations under the License.
    * Updates the state of the Sign-in form.
    */
   function updateSignInFormUI() {
-    if (firebase.auth().currentUser || window.confirmationResult) {
+    if (auth.currentUser || window.confirmationResult) {
       document.getElementById('sign-in-form').style.display = 'none';
     } else {
       resetReCaptcha();
@@ -296,7 +300,7 @@ limitations under the License.
    * Updates the state of the Verify code form.
    */
   function updateVerificationCodeFormUI() {
-    if (!firebase.auth().currentUser && window.confirmationResult) {
+    if (!auth.currentUser && window.confirmationResult) {
       document.getElementById('verification-code-form').style.display = 'block';
     } else {
       document.getElementById('verification-code-form').style.display = 'none';
@@ -307,7 +311,7 @@ limitations under the License.
    * Updates the state of the Sign out button.
    */
   function updateSignOutButtonUI() {
-    if (firebase.auth().currentUser) {
+    if (auth.currentUser) {
       document.getElementById('sign-out-button').style.display = 'block';
     } else {
       document.getElementById('sign-out-button').style.display = 'none';
@@ -318,7 +322,7 @@ limitations under the License.
    * Updates the Signed in user status panel.
    */
   function updateSignedInUserStatusUI() {
-    var user = firebase.auth().currentUser;
+    var user = auth.currentUser;
     if (user) {
       document.getElementById('sign-in-status').textContent = 'Signed in';
       document.getElementById('account-details').textContent = JSON.stringify(user, null, '  ');

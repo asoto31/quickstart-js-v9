@@ -30,22 +30,27 @@ limitations under the License.
   <!-- Import and configure the Firebase SDK -->
   <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
   <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-  <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+  <!-- <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
   <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
-  <script src="/__/firebase/init.js"></script>
+  <script src="/__/firebase/init.js"></script> -->
 
-  <script type="text/javascript">
+  <script type="module" src="./init.js"></script>
+
+  <script type="module">
+    import { auth } from "./init.js";
+    import { onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
     /**
      * Function called when clicking the Login/Logout button.
      */
     function toggleSignIn() {
-      if (!firebase.auth().currentUser) {
-        var provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-        firebase.auth().signInWithPopup(provider).then(function(result) {
+      if (!auth.currentUser) {
+        var provider = new GoogleAuthProvider();
+        // provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+        signInWithPopup(auth, provider).then(function(result) {
           // This gives you a Google Access Token. You can use it to access the Google API.
-          var token = result.credential.accessToken;
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
           // The signed-in user info.
           var user = result.user;
           document.getElementById('quickstart-oauthtoken').textContent = token;
@@ -66,7 +71,7 @@ limitations under the License.
           }
         });
       } else {
-        firebase.auth().signOut();
+        auth.signOut();
       }
       document.getElementById('quickstart-sign-in').disabled = true;
     }
@@ -78,7 +83,7 @@ limitations under the License.
      */
     function initApp() {
       // Listening for auth state changes.
-      firebase.auth().onAuthStateChanged(function(user) {
+      onAuthStateChanged(auth, function(user) {
         if (user) {
           // User is signed in.
           var displayName = user.displayName;

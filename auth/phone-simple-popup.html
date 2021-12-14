@@ -53,11 +53,15 @@ limitations under the License.
 <!-- Import and configure the Firebase SDK -->
 <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
 <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-<script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+<!-- <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
 <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
-<script src="/__/firebase/init.js"></script>
+<script src="/__/firebase/init.js"></script> -->
 
-<script type="text/javascript">
+<script type="module" src="./init.js"></script>
+
+  <script type="module">
+    import { auth } from "./init.js";
+    import { onAuthStateChanged, signOut, RecaptchaVerifier } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
   /**
    * Set up UI event listeners and registering Firebase auth listeners.
@@ -68,7 +72,7 @@ limitations under the License.
     document.getElementById('phone-number').addEventListener('keyup', updateSignInButtonUI);
     document.getElementById('phone-number').addEventListener('change', updateSignInButtonUI);
 
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+    window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container');
   };
 
   /**
@@ -81,7 +85,7 @@ limitations under the License.
       updateSignInButtonUI();
       var phoneNumber = getPhoneNumberFromUserInput();
       var appVerifier = window.recaptchaVerifier;
-      firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+      signInWithPhoneNumber(auth, phoneNumber, appVerifier)
           .then(function(confirmationResult) {
             window.signingIn = false;
             updateSignInButtonUI();

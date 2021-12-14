@@ -30,28 +30,33 @@ limitations under the License.
   <!-- Import and configure the Firebase SDK -->
   <!-- These scripts are made available when the app is served or deployed on Firebase Hosting -->
   <!-- If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup -->
-  <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+  <!-- <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
   <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
-  <script src="/__/firebase/init.js"></script>
+  <script src="/__/firebase/init.js"></script> -->
 
-  <script type="text/javascript">
+  <script type="module" src="./init.js"></script>
+
+  <script type="module">
+    import { auth } from "./init.js";
+    import { onAuthStateChanged, signOut, OAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
     /**
      * Function called when clicking the Login/Logout button.
      */
     function toggleSignIn() {
-      if (!firebase.auth().currentUser) {
-        var provider = new firebase.auth.OAuthProvider('microsoft.com');
+      if (!auth.currentUser) {
+        var provider = new OAuthProvider('microsoft.com');
 
         provider.addScope('User.Read');
-        firebase.auth().signInWithPopup(provider).then(function(result) {
+        signInWithPopup(auth, provider).then(function(result) {
           // This gives you a Microsoft Access Token. You can use it to access the Microsoft API.
-          var token = result.credential.accessToken;
+          const credential = OAuthProvider.credentialFromResult(result);
+          const accessToken = credential.accessToken;
           // You can also retrieve the OAuth ID token.
-          var idToken = result.credential.idToken;
+          const idToken = credential.idToken;
           // The signed-in user info.
           var user = result.user;
-          document.getElementById('quickstart-oauthtoken').textContent = token;
+          document.getElementById('quickstart-oauthtoken').textContent = idToken;
         }).catch(function(error) {
           // Handle Errors here.
           var errorCode = error.code;
@@ -69,7 +74,7 @@ limitations under the License.
           }
         });
       } else {
-        firebase.auth().signOut();
+        auth.signOut();
       }
       document.getElementById('quickstart-sign-in').disabled = true;
     }
@@ -81,7 +86,7 @@ limitations under the License.
      */
     function initApp() {
       // Listening for auth state changes.
-      firebase.auth().onAuthStateChanged(function(user) {
+      onAuthStateChanged(auth, function(user) {
         if (user) {
           // User is signed in. Note that unlike other providers supported by Firebase Auth, Microsoft does
           // not provide a profile photo so user.photoURL will be null. However, it can be queried using

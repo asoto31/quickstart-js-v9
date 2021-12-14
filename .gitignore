@@ -5,3 +5,7 @@
 **/*.bak
 .idea
 .firebaserc
+.DS_Store
+**/.DS_Store
+firestore/firestore-debug.log
+firestore/ui-debug.log

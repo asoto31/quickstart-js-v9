@@ -15,6 +15,8 @@
  */
 'use strict';
 
+import FriendlyEats from './FriendlyEats.js';
+
 FriendlyEats.prototype.addRestaurant = function (data) {
   const collection = firebase.firestore().collection('restaurants');
   return collection.add(data);
