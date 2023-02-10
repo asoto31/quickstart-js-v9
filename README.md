@@ -1,4 +1,4 @@
-# Firebase Quickstarts for Javascript 1
+# Firebase Quickstarts for Javascript
 
 A collection of quickstart samples demonstrating the Firebase APIs using the Javascript SDK. For more information, see [firebase.google.com/docs/web/setup](https://firebase.google.com/docs/web/setup).
 
